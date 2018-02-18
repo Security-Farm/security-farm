@@ -1,0 +1,11 @@
+To enable RTIR:
+
+apachectl stop
+vim /opt/rt4/etc/RT_SiteConfig.pm 
+Add the following line:
+#
+Plugin( 'RT::IR' );
+#
+cd /opt/RT-IR-4.0.0
+make initdb (Use root password)
+apachectl start

@@ -1,0 +1,47 @@
+https://access.redhat.com/solutions/199573
+
+#Find the volume you want to resize
+fdisk -l
+pvs
+#Use fdisk to delete the partition
+fdisk /dev/[dev]
+
+Command (m for help): d
+Partition number (1,2, default 2): 2
+Partition 2 is deleted
+
+Command (m for help): n
+Partition type:
+   p   primary (1 primary, 0 extended, 3 free)
+   e   extended
+Select (default p): p
+Partition number (2-4, default 2): 2
+First sector (1026048-62914559, default 1026048): 
+Using default value 1026048
+Last sector, +sectors or +size{K,M,G} (1026048-62914559, default 62914559):
+Default will use all free space
+
+Command (m for help): t
+Partition number (1,2, default 2): 2
+Hex code (type L to list all codes): 8e
+Changed type of partition 'Linux' to 'Linux LVM'
+
+Command (m for help): p
+
+Command (m for help): w
+The partition table has been altered!
+
+
+#Execute partx (provided by util-linux package) with --update option on the block device to update the in-memory kernel partition table from the on-disk partition table:
+partx -u /dev/[dev]
+cat /proc/partitions
+
+#Extend PV, not sure if this is necessary.
+pvresize /dev/vda2
+pvs
+
+#View lvm and resize (-r resizes file system, else use fsadmin resize [outputfromlvdisplay]
+lvdisplay
+lvextend -r /dev/[frompreviouscommand] /dev/[pysicaldev]
+df -h
+
