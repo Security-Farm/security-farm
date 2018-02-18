@@ -1,5 +1,5 @@
 #!Python3
-#Justin Mason 18 FEB 2018
+#Justin Mason 28 JAN 2018
 import re
 import os
 import time
@@ -114,10 +114,10 @@ def configure():
     stdout, stderr = shell.communicate()
     stdout = stdout.decode('utf-8')
     stderr = stderr.decode('utf-8')
-    regex = re.compile('ens192:')
+    regex = re.compile('ens160:')
     if (regex.search(stdout)):
-        print('\nThe default interface to configure is ens192.\nInput a different interface or press enter to continue: ', end='')
-        interface = input() or "ens192"
+        print('\nThe default interface to configure is ens160.\nInput a different interface or press enter to continue: ', end='')
+        interface = input() or "ens160"
     else:
         print('\n' + stdout)
         print('\nPlease choose an interface: ')
@@ -158,6 +158,7 @@ def configure():
     file.write('NETMASK="%s"\n' % netmask)
     file.write('GATEWAY="%s"\n' % gateway)
     file.write('DNS1="%s"\n' % dns)
+    file.write('ZONE="public"')
     file.close()
 
     file = open('/var/named/soc.lan.zone', 'w')
@@ -180,17 +181,9 @@ def configure():
 
     file = open('/etc/chrony.conf', 'w')
     file.write('server %s iburst\n' % ntpadd)
-    file.write('stratumweight 0\n')
     file.write('driftfile /var/lib/chrony/drift\n')
+    file.write('makestep 1.0 3\n')
     file.write('rtcsync\n')
-    file.write('makestep 10 3\n')
-    file.write('bindcmdaddress 127.0.0.1\n')
-    file.write('bindcmdaddress ::1\n')
-    file.write('keyfile /etc/chrony.keys\n')
-    file.write('commandkey 1\n')
-    file.write('generatecommandkey\n')
-    file.write('noclientlog\n')
-    file.write('logchange 0.5\n')
     file.write('logdir /var/log/chrony\n')
     file.close()
     
@@ -373,7 +366,7 @@ def status():
     print('\nPorts Allowed:')
     #SSH
     print('22:  ', end='')
-    shell = subprocess.Popen(["firewall-cmd", "--query-service=ssh"],shell=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    shell = subprocess.Popen(["firewall-cmd", "--zone=public", "--query-service=ssh"],shell=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     stdout, stderr = shell.communicate()
     stdout = stdout.decode('utf-8')
     stderr = stderr.decode('utf-8')
@@ -381,7 +374,7 @@ def status():
     print(sshPort, end='')
     #DNS
     print('53:  ', end='')
-    shell = subprocess.Popen(["firewall-cmd", "--query-service=dns"],shell=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    shell = subprocess.Popen(["firewall-cmd", "--zone=public", "--query-service=dns"],shell=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     stdout, stderr = shell.communicate()
     stdout = stdout.decode('utf-8')
     stderr = stderr.decode('utf-8')
@@ -389,7 +382,7 @@ def status():
     print(dnsPort, end='')
     #HTTP
     print('80:  ', end='')
-    shell = subprocess.Popen(["firewall-cmd", "--query-service=http"],shell=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    shell = subprocess.Popen(["firewall-cmd", "--zone=public", "--query-service=http"],shell=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     stdout, stderr = shell.communicate()
     stdout = stdout.decode('utf-8')
     stderr = stderr.decode('utf-8')
@@ -397,7 +390,7 @@ def status():
     print(httpPort, end='')
     #HTTPS
     print('443: ', end='')
-    shell = subprocess.Popen(["firewall-cmd", "--query-service=https"],shell=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    shell = subprocess.Popen(["firewall-cmd", "--zone=public", "--query-service=https"],shell=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     stdout, stderr = shell.communicate()
     stdout = stdout.decode('utf-8')
     stderr = stderr.decode('utf-8')
@@ -449,25 +442,25 @@ def status():
     if not(regex.search(sshPort)):
         print('\nSSH rule not found, press enter to attempt fix.', end='')
         input()
-        os.system('firewall-cmd --permanent --add-service=ssh')
+        os.system('firewall-cmd --zone=public --permanent --add-service=ssh')
         os.system('firewall-cmd --reload')
         print('Fix Attempted')
     if not(regex.search(dnsPort)):
         print('\nDNS rule not found, press enter to attempt fix.', end='')
         input()
-        os.system('firewall-cmd --permanent --add-service=dns')
+        os.system('firewall-cmd --zone=public --permanent --add-service=dns')
         os.system('firewall-cmd --reload')
         print('Fix Attempted')
     if not(regex.search(httpPort)):
         print('\nHTTP rule not found, press enter to attempt fix.', end='')
         input()
-        os.system('firewall-cmd --permanent --add-service=http')
+        os.system('firewall-cmd --zone=public --permanent --add-service=http')
         os.system('firewall-cmd --reload')
         print('Fix Attempted')
     if not(regex.search(httpsPort)):
         print('\nHTTPS rule not found, press enter to attempt fix.', end='')
         input()
-        os.system('firewall-cmd --permanent --add-service=https')
+        os.system('firewall-cmd --zone=public --permanent --add-service=https')
         os.system('firewall-cmd --reload')
         print('Fix Attempted')
             
