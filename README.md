@@ -1,4 +1,4 @@
-www.securityfarm.net
+https://securityfarm.net
 
 
 Someday I'd like to have security farm set up as an installer. For now though it is a VM built in ESXi 6.0u2
@@ -10,7 +10,7 @@ Run 'security_farm' as root after deployment. Use this to change the IP address.
 v1.00 includes draft documentation in /root and on the wiki. Also available on GitHub.
 
 
-http://securityfarm.net/files/security_farm_v1.00.zip
+https://securityfarm.net/wp-content/uploads/manual/security_farm_v1.10.zip
 
 
 All passwords (root, the database passwords, the web interface passwords, etc) NEED TO BE CHANGED if you're going to use this in production.
@@ -116,5 +116,3 @@ root/password
 
 
 ---
-
-For other questions: justin@securityfarm.net. Depending on how busy I am I may not respond; don't take it personally
